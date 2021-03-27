@@ -41,7 +41,7 @@ const connectOptions = {
 
 //implementação da rota
 const route = router.get('/',function(req,res){
-    res.status(200).send(m2['payload_fields']); 
+    res.status(200).send(m2); 
 });
 
 app.use('/', route);
