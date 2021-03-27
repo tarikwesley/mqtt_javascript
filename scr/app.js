@@ -3,7 +3,15 @@ const express = require('express');
 const app = express();
 const router = express.Router();
 
+const path = require('path'); // para options e enviar arquivo com o res.send
+app.use(express.json()) // para options e enviar arquivo com o res.send
+app.use(express.urlencoded({ extended: true })) // para options e enviar arquivo com o res.send
 
+//TODO: need improvement
+backEndData ={
+	contFromLoraNode: 1,
+	lastDataFromFrontEnd: 0 
+}
 
 //configurações para comunicação do cliente mqtt com o ttn
 const connectOptions = {
@@ -41,8 +49,31 @@ const connectOptions = {
 
 //implementação da rota
 const route = router.get('/',function(req,res){
-    res.status(200).send(m2); 
+	const options = {
+		root: path.join(__dirname, './'), 
+		dotfiles: 'deny',
+		headers: {
+		  'x-timestamp': Date.now(),
+		  'x-sent': true
+		}
+	}
+    res.sendFile('index.html',options)
+	//res.status(200).send(m2); 
 });
+
+app.get('/api/dataPath', function (req, res) { //endereco da requisicao onde e retornado hello world
+  console.log('New req')
+  backEndData.contFromLoraNode = m2.payload_fields.contador
+  res.send(backEndData)
+  //res.send(m2)
+})
+
+// Route that receives a POST request to /updateInc
+app.post('/updateBackEnd', function (req, res) {
+	//backEndData.incValue = parseInt(req.body.newIncValue,10);
+	backEndData.lastDataFromFrontEnd = req.body.newIncValue;
+	console.log(req.body);
+})
 
 app.use('/', route);
 
