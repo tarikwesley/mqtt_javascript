@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Backend and frontend example</title>
+</head>
+<body>
+
+  <h1 id="title"> Example for Backend and frontend communication</h1>
+  
+  <h1> Exemplo tarik</h1>
+  
+  <label for="fname">New increment value:</label>
+  <input type="number" id="htmlIncValue" name="fname">
+  <input type="button" value="submit" onclick="clickHandler()">
+  <br><br>
+  
+  <ul id="htmlUlLista">
+  </ul>
+  
+  <h2 id="htmlInfoServer"></h2>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+
+<script>
+
+
+//When the page is loaded, this function is called. 
+getDataFromBackEnd(); 
+
+// Then, after some time getDataFromBackEnd is called periodically
+setInterval(getDataFromBackEnd,2000);
+
+
+var cntError = 0;
+
+// This function 
+function getDataFromBackEnd(){
+	
+	// createDynamicList is a function that receive the data from Server and
+	// process. It creates a list in the HTML element htmlUlAlunos
+	const createDynamicList = ( dataFromServer ) => {
+	cntError = 0; // n case of success, clear counter error
+	document.getElementById("htmlInfoServer").innerHTML = ""; // clean error msg
+	
+	
+	console.log(dataFromServer)
+	
+	document.getElementById("htmlUlLista").innerHTML = dataFromServer.contFromLoraNode;
+	
+	/* document.getElementById("htmlUlAlunos").innerHTML = "<p> Increment Value in the backend: ".concat(dataFromServer.incValue)+ "</p>"
+	document.getElementById("htmlUlAlunos").innerHTML+= "<p> Current Value in the backend: ".concat(dataFromServer.currentValue)+ "</p>"
+	*/
+	}
+	
+	// request new data from http://localhost:3000/api/dataPath
+	axios.get('http://18.231.49.112:3333/api/dataPath')
+	.then(response => createDynamicList(response.data))
+	.catch(error => console.log(error))
+	//.catch(processExceptionGet)
+	
+	
+}
+
+function processExceptionGet(error){
+	++cntError;
+	document.getElementById("htmlInfoServer").innerHTML = "Erro #".concat(cntError) +" ao tentar acessar o servidor"
+}
+
+
+function clickHandler(){
+	newIncValue = document.getElementById("htmlIncValue").value;
+	console.log(newIncValue)
+	
+	// If it is not a Number it is not a empty string, then post to backend,
+	// otherwise do nothing
+	if(!isNaN(newIncValue) && newIncValue!=''){ 
+		axios.post('http://18.231.49.112:3333/updateBackEnd',{"newIncValue": newIncValue})
+	}
+}
+
+</script>
+</html>
